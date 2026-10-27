@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solo Founders 100</title>
+  <meta name="description" content="The 100 largest companies started by a single founder, ranked by market cap, valuation, exit price or revenue.">
+  <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>Solo Founders 100</h1>
+      <p class="sub">The largest companies started by one person, from 1868 to last year</p>
+    </div>
+    <dl id="stats"></dl>
+  </header>
+
+  <section class="controls" aria-label="Filters">
+    <input id="search" type="search" placeholder="Search a company, founder or country…" autocomplete="off">
+    <select id="sector" aria-label="Sector"></select>
+    <select id="country" aria-label="Country"></select>
+    <div class="seg" id="status" role="tablist" aria-label="Status"></div>
+    <select id="sort" aria-label="Sort by">
+      <option value="value">Sort: largest first</option>
+      <option value="new">Sort: newest first</option>
+      <option value="old">Sort: oldest first</option>
+      <option value="name">Sort: A–Z</option>
+    </select>
+  </section>
+
+  <main>
+    <section id="list-wrap">
+      <p id="count"></p>
+      <ol id="list"></ol>
+    </section>
+
+    <aside id="panel">
+      <div id="detail"></div>
+      <h3>By sector</h3>
+      <ul id="by-sector" class="bars"></ul>
+      <h3>By country</h3>
+      <ul id="by-country" class="bars"></ul>
+    </aside>
+  </main>
+
+  <footer>
+    <p><strong>What counts as solo.</strong> A company is listed when it was started by one person, as widely reported.
+      Where a partner, investor or family member was involved early on, the company's card says so.</p>
+    <p><strong>How it's ranked.</strong> By the best available size figure: market cap for listed companies, the last
+      private valuation, the price paid in an acquisition, or annual revenue where none of those exist. These measure
+      different things, so treat the ranking as rough orientation. Figures are approximate, rounded and in US dollars;
+      each card shows the measure and the year. Not investment advice.</p>
+  </footer>
+
+  <script src="data.js?v=1"></script>
+  <script src="app.js?v=1"></script>
+</body>
+</html>
