@@ -1,4 +1,4 @@
-/* global COMPANIES, METRICS */
+/* global COMPANIES, METRICS, SECTORS */
 
 const fmt = (b) => {
   if (b >= 1000) return `$${(b / 1000).toFixed(2).replace(/0$/, "")}T`;
@@ -17,7 +17,7 @@ const maxLog = Math.log10(rows[0].value * 1000);
 const barWidth = (v) => `${Math.max(2, (Math.log10(v * 1000) / maxLog) * 100)}%`;
 
 const STATUSES = ["All", "Public", "Private", "Acquired", "Bootstrapped"];
-const state = { q: "", sector: "", country: "", status: "All", sort: "value", selected: rows[0] };
+const state = { view: "sector", q: "", sector: "", country: "", status: "All", sort: "value", selected: rows[0] };
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -53,7 +53,7 @@ function renderStats() {
 
 function renderControls() {
   $("sector").innerHTML = `<option value="">All sectors</option>` +
-    uniq("sector").map((s) => `<option>${esc(s)}</option>`).join("");
+    SECTORS.map((s) => `<option>${esc(s)}</option>`).join("");
   $("country").innerHTML = `<option value="">All countries</option>` +
     uniq("country").map((s) => `<option>${esc(s)}</option>`).join("");
   $("status").innerHTML = STATUSES.map((s) =>
@@ -63,16 +63,17 @@ function renderControls() {
   $("sector").addEventListener("change", (e) => { state.sector = e.target.value; render(); });
   $("country").addEventListener("change", (e) => { state.country = e.target.value; render(); });
   $("sort").addEventListener("change", (e) => { state.sort = e.target.value; render(); });
+  $("view").addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (b) { state.view = b.dataset.v; render(); }
+  });
   $("status").addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (b) { state.status = b.dataset.s; render(); }
   });
 }
 
-function renderList(list) {
-  $("count").textContent = list.length === rows.length
-    ? `All ${rows.length} companies` : `${list.length} of ${rows.length} companies`;
-  $("list").innerHTML = list.length ? list.map((r) => `
+const rowHtml = (r) => `
     <li data-rank="${r.rank}" class="${r === state.selected ? "selected" : ""}">
       <span class="rank">${r.rank}</span>
       <div class="who">
@@ -83,7 +84,19 @@ function renderList(list) {
         <div class="num"><strong>${fmt(r.value)}</strong><small>${METRICS[r.metric]} · ${r.asOf}</small></div>
         <div class="track"><span style="width:${barWidth(r.value)}"></span></div>
       </div>
-    </li>`).join("") : `<li class="empty">No companies match these filters.</li>`;
+    </li>`;
+
+function renderList(list) {
+  $("count").textContent = list.length === rows.length
+    ? `All ${rows.length} companies` : `${list.length} of ${rows.length} companies`;
+  if (!list.length) { $("list").innerHTML = `<li class="empty">No companies match these filters.</li>`; return; }
+  if (state.view === "rank") { $("list").innerHTML = list.map(rowHtml).join(""); return; }
+  $("list").innerHTML = SECTORS.map((sector) => {
+    const own = list.filter((r) => r.sector === sector);
+    if (!own.length) return "";
+    return `<li class="group"><h2>${esc(sector)}</h2><span>${own.length} ${own.length === 1 ? "company" : "companies"}</span></li>` +
+      own.map(rowHtml).join("");
+  }).join("");
 }
 
 function renderDetail() {
@@ -108,7 +121,7 @@ function renderDetail() {
 function renderBars(id, key, list) {
   const counts = countBy(list, key);
   const max = counts.length ? counts[0][1] : 1;
-  $(id).innerHTML = counts.slice(0, 10).map(([k, n]) => `
+  $(id).innerHTML = counts.slice(0, key === "sector" ? SECTORS.length : 10).map(([k, n]) => `
     <li><button data-k="${esc(k)}" class="${state[key] === k ? "active" : ""}">
       <span class="label">${esc(k)}</span>
       <span class="track"><span style="width:${(n / max) * 100}%"></span></span>
@@ -132,6 +145,7 @@ function countBy(list, key) {
 function render() {
   const list = filtered();
   if (!list.includes(state.selected)) state.selected = list[0] || null;
+  document.querySelectorAll("#view button").forEach((b) => b.classList.toggle("active", b.dataset.v === state.view));
   document.querySelectorAll("#status button").forEach((b) => b.classList.toggle("active", b.dataset.s === state.status));
   renderList(list);
   renderDetail();

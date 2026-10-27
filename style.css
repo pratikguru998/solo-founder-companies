@@ -91,6 +91,14 @@ main {
 }
 #list li:hover { background: var(--surface-2); }
 #list li.selected { background: var(--surface-2); box-shadow: inset 3px 0 0 var(--accent); }
+#list li.group {
+  display: flex; justify-content: space-between; align-items: baseline;
+  cursor: default; padding: 16px 16px 6px; background: var(--bg);
+}
+#list li.group:first-child { border-top: 0; }
+#list li.group:hover { background: var(--bg); }
+#list li.group h2 { margin: 0; font-size: 15px; }
+#list li.group span { color: var(--muted); font-size: 12px; }
 .rank { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
 .who { min-width: 0; }
 .name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
