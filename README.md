@@ -1,5 +1,7 @@
 # Solo Founders 100
 
+**Live:** https://pratikguru998.github.io/solo-founder-companies/
+
 The 100 largest companies started by a single founder — from Amazon and TSMC to one-person indie businesses —
 ranked by market cap, last private valuation, acquisition price, or revenue.
 
